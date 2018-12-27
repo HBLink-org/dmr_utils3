@@ -21,7 +21,7 @@
 
 
 from bitarray import bitarray
-import hamming, crc, rs129
+from dmr_utils3 import hamming, crc, rs129
 
 # Does anybody read this stuff? There's a PEP somewhere that says I should do this.
 __author__     = 'Cortney T. Buffington, N0MJS'

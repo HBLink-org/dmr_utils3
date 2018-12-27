@@ -22,7 +22,7 @@
 from bitarray import bitarray
 from binascii import b2a_hex as ahex
 
-from golay_tables import *
+from dmr_utils3.golay_tables import *
 
 # Does anybody read this stuff? There's a PEP somewhere that says I should do this.
 __author__     = 'Cortney T. Buffington, N0MJS'
