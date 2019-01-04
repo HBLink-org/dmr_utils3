@@ -43,24 +43,24 @@ TGID_FIELDS  = ('ID', 'NAME')
 
 
 #************************************************
-#     STRING UTILITY FUNCTIONS
+#     BYTES UTILITY FUNCTIONS
 #************************************************
 
-# Create a 2 byte hex string from an integer
-def hex_str_2(_int_id):
+# Create a 2 bytes from an integer
+def bytes_2(_int_id):
     return _int_id.to_bytes(2, 'big')
 
-# Create a 3 byte hex string from an integer
-def hex_str_3(_int_id):
+# Create a 3 bytes from an integer
+def bytes_3(_int_id):
     return _int_id.to_bytes(3, 'big')
 
-# Create a 4 byte hex string from an integer
-def hex_str_4(_int_id):
+# Create a 4 bytes from an integer
+def bytes_4(_int_id):
     return _int_id.to_bytes(4, 'big')
 
-# Convert a hex string to an int (radio ID, etc.)
-def int_id(_hex_string):
-    return int(ahex(_hex_string), 16)
+# Convert bytes to an int (radio ID, etc.)
+def int_id(_hex_bytes):
+    return int(ahex(_hex_bytes), 16)
 
 
 #************************************************
@@ -132,7 +132,7 @@ def mk_full_id_dict(_path, _file, _type):
 
 # THESE ARE THE SAME THING FOR LEGACY PURPOSES
 def get_alias(_id, _dict, *args):
-    if type(_id) == str:
+    if type(_id) == bytes:
         _id = int_id(_id)
     if _id in _dict:
         if args:
@@ -148,7 +148,7 @@ def get_alias(_id, _dict, *args):
     return _id
 
 def get_info(_id, _dict, *args):
-    if type(_id) == str:
+    if type(_id) == bytes:
         _id = int_id(_id)
     if _id in _dict:
         if args:
@@ -190,7 +190,7 @@ if __name__ == '__main__':
     if subscriber_ids:
         print('ID ALIAS MAPPER: full_subscriber_ids dictionary is available')
 
-    print(get_alias(3120101, subscriber_ids))
+    print(get_alias(b'\x2f\x9b\xe5', subscriber_ids))
     print(get_info(3120101, subscriber_ids))
     print(get_alias(3120101, full_subscriber_ids))
     print(get_info(3120101, full_subscriber_ids))
@@ -202,8 +202,8 @@ if __name__ == '__main__':
     print(get_alias(312000, full_peer_ids))
     print(get_info(312000, full_peer_ids))
 
-    print(hex_str_2(65535))
-    print(hex_str_3(65535))
-    print(ahex(hex_str_4(13120101)))
+    print(bytes_2(65535))
+    print(bytes_3(65535))
+    print(ahex(bytes_4(13120101)))
     print(int_id(b'\x00\xc8\x32\x65'))
     
