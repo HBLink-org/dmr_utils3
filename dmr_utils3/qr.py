@@ -104,10 +104,10 @@ if __name__ == '__main__':
     from bitarray import bitarray
     
     EMB_bits = [0,0,0,0]
-    EMB_bits[0] = bitarray('0001000') # 111100010
-    EMB_bits[1] = bitarray('0001001') # 110010001
-    EMB_bits[2] = bitarray('0001010') # 100000111
-    EMB_bits[3] = bitarray('0001011') # 101110100
+    EMB_bits[0] = bitarray('0000000') # 000000000
+    EMB_bits[1] = bitarray('0000001') # 001110011
+    EMB_bits[2] = bitarray('0000010') # 011100101
+    EMB_bits[3] = bitarray('0000011') # 010010110
     print(EMB_bits)
 
     
