@@ -137,7 +137,7 @@ def mk_full_id_dict(_path, _file, _type):
             elif _type == 'tgid':
                 for record in records:
                     _dict[int(record['tgid'])] = {
-                        'NAME': record['name'],
+                        'NAME': record['callsign'],
                         'ID': record['id'] 
                     }
         return _dict
