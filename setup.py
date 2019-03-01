@@ -7,13 +7,13 @@ def readme():
         return file.read()
 
 setup(name='dmr_utils3',
-      version='0.1.20',
+      version='0.1.21',
       description='ETSI DMR (Digital Mobile Radio) Tier II Utilities',
       long_description='Modules to disassemble and assemble DMR packets, including generating and decoding various FEC routines',
       classifiers=[
           'License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)',
           'Development Status :: 5 - Production/Stable',
-          'Programming Language :: Python :: 3.7',
+          'Programming Language :: Python :: 3.5',
           'Natural Language :: English',
           'Operating System :: OS Independent',
           'Topic :: Communications :: Ham Radio',

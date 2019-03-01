@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 ###############################################################################
-#   Copyright (C) 2016-2018  Cortney T. Buffington, N0MJS <n0mjs@me.com>
+#   Copyright (C) 2016-2019  Cortney T. Buffington, N0MJS <n0mjs@me.com>
 #
 #   This program is free software; you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -20,16 +20,15 @@
 
 import ssl
 
+from json import load as jload
 from os.path import isfile, getmtime
 from time import time
 from urllib.request import urlopen
-from csv import reader as csv_reader
-from csv import DictReader as csv_dict_reader
 from binascii import b2a_hex as ahex
 
 # Does anybody read this stuff? There's a PEP somewhere that says I should do this.
 __author__     = 'Cortney T. Buffington, N0MJS'
-__copyright__  = 'Copyright (c) 2016-2018 Cortney T. Buffington, N0MJS and the K0USY Group'
+__copyright__  = 'Copyright (c) 2016-2019 Cortney T. Buffington, N0MJS and the K0USY Group'
 __credits__    = 'Colin Durbridge, G4EML, Steve Zingman, N4IRS; Mike Zingman'
 __license__    = 'GNU GPLv3'
 __maintainer__ = 'Cort Buffington, N0MJS'
@@ -90,45 +89,61 @@ def try_download(_path, _file, _url, _stale,):
         result = 'ID ALIAS MAPPER: \'{}\' is current, not downloaded'.format(_file)
     return result
 
-# LEGACY VERSION - MAKES A SIMPLE {INTEGER ID: 'CALLSIGN'} DICTIONARY
+# SHORT VERSION - MAKES A SIMPLE {INTEGER ID: 'CALLSIGN'} DICTIONARY
 def mk_id_dict(_path, _file):
     _dict = {}
     try:
         with open(_path+_file, 'r', encoding='latin1') as _handle:
-            ids = csv_reader(_handle, dialect='excel', delimiter=',')
-            for row in ids:
-                try:
-                    _dict[int(row[0])] = (row[1])
-                except:
-                    pass
+            records = jload(_handle)['results']
             _handle.close
-            return _dict
+            for record in records:
+                   _dict[int(record['id'])] = record['callsign']
+        return _dict
     except IOError:
         return _dict
 
-# NEW VERSION - MAKES A FULL DICTIONARY OF INFORMATION BASED ON TYPE OF ALIAS FILE
-# BASED ON DOWNLOADS FROM DMR-MARC, TGID IS STILL A "SIMPLE" DICTIONARY      
+
+# LONG VERSION - MAKES A FULL DICTIONARY OF INFORMATION BASED ON TYPE OF ALIAS FILE
+# BASED ON DOWNLOADS FROM RADIOID.NET      
 def mk_full_id_dict(_path, _file, _type):
     _dict = {}
-    if _type == 'subscriber':
-        fields = SUB_FIELDS
-    elif _type == 'peer':
-        fields = PEER_FIELDS
-    elif _type == 'tgid':
-        fields = TGID_FIELDS
     try:
         with open(_path+_file, 'r', encoding='latin1') as _handle:
-            ids = csv_dict_reader(_handle, fieldnames=fields, restkey='OTHER', dialect='excel', delimiter=',')
-            for row in ids:
-                for item in row:
-                    try:
-                        _dict[int(row['ID'])] = dict(row)
-                    except:
-                        pass
+            records = jload(_handle)['results']
             _handle.close
-            return (_dict)
+            if _type == 'peer':
+                for record in records:
+                    _dict[int(record['id'])] = {
+                        'CALLSIGN': record['callsign'],
+                        'CITY': record['city'],
+                        'STATE': record['state'],
+                        'COUNTRY': record['country'],
+                        'FREQ': record['frequency'],
+                        'CC': record['color_code'],
+                        'OFFSET': record['offset'],
+                        'LINKED': record['ts_linked'],
+                        'TRUSTEE': record['trustee'],
+                        'NETWORK': record['ipsc_network']
+                    }
+            elif _type == 'subscriber':
+                for record in records:
+                    _dict[int(record['id'])] = {
+                        'CALLSIGN': record['callsign'],
+                        'NAME': (record['fname'] + ' ' + record['surname']),
+                        'CITY': record['city'],
+                        'STATE': record['state'],
+                        'COUNTRY': record['country']
+                    }
+            elif _type == 'tgid':
+                for record in records:
+                    _dict[int(record['tgid'])] = {
+                        'NAME': record['name'],
+                        'ID': record['id'] 
+                    }
+        return _dict
     except IOError:
         return _dict
+
 
 # THESE ARE THE SAME THING FOR LEGACY PURPOSES
 def get_alias(_id, _dict, *args):
@@ -166,27 +181,32 @@ def get_info(_id, _dict, *args):
 
 if __name__ == '__main__':
 
+    '''
+    repeater file:  ('callsign', 'city', 'color_code', 'country', 'frequency', 'ipsc_network', 'locator', 'offset', 'state', 'trustee', 'ts_linked')
+    user file:      ('callsign', 'city', 'country', 'fname', 'radio_id', 'remarks', 'state', 'surname')
+    '''
+    
     # Try updating peer aliases file
-    result = try_download('/tmp/', 'peers.csv', 'https://www.radioid.net/static/rptrs.csv', 0)
+    result = try_download('/tmp/', 'peers.json', 'https://www.radioid.net/api/dmr/repeater/?country=united%20states', 0)
     print(result)
     # Try updating subscriber aliases file
-    result = try_download('/tmp/', 'subscribers.csv', 'https://www.radioid.net/static/users.csv', 0)
+    result = try_download('/tmp/', 'subscribers.json', 'https://www.radioid.net/api/dmr/user/?country=united%20states', 0)
     print(result)
         
     # Make Dictionaries
-    peer_ids = mk_id_dict('/tmp/', 'peers.csv')
+    peer_ids = mk_id_dict('/tmp/', 'peers.json')
     if peer_ids:
         print('ID ALIAS MAPPER: peer_ids dictionary is available')
         
-    subscriber_ids = mk_id_dict('/tmp/', 'subscribers.csv')
+    subscriber_ids = mk_id_dict('/tmp/', 'subscribers.json')
     if subscriber_ids:
         print('ID ALIAS MAPPER: subscriber_ids dictionary is available')
-    
-    full_peer_ids = mk_full_id_dict('/tmp/', 'peers.csv', 'peer')
+        
+    full_peer_ids = mk_full_id_dict('/tmp/', 'peers.json', 'peer')
     if peer_ids:
         print('ID ALIAS MAPPER: full_peer_ids dictionary is available')
         
-    full_subscriber_ids = mk_full_id_dict('/tmp/', 'subscribers.csv', 'subscriber')
+    full_subscriber_ids = mk_full_id_dict('/tmp/', 'subscribers.json', 'subscriber')
     if subscriber_ids:
         print('ID ALIAS MAPPER: full_subscriber_ids dictionary is available')
 
