@@ -138,7 +138,6 @@ def mk_full_id_dict(_path, _file, _type):
                 for record in records:
                     _dict[int(record['id'])] = {
                         'NAME': record['callsign'],
-                        'ID': record['id'] 
                     }
         return _dict
     except IOError:
