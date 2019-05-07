@@ -94,10 +94,14 @@ def mk_id_dict(_path, _file):
     _dict = {}
     try:
         with open(_path+_file, 'r', encoding='latin1') as _handle:
-            records = jload(_handle)['results']
+            records = jload(_handle)
+            records = records[[*records][0]]
             _handle.close
             for record in records:
-                   _dict[int(record['id'])] = record['callsign']
+                try:
+                    _dict[int(record['id'])] = record['callsign']
+                except:
+                    pass
         return _dict
     except IOError:
         return _dict
@@ -109,37 +113,47 @@ def mk_full_id_dict(_path, _file, _type):
     _dict = {}
     try:
         with open(_path+_file, 'r', encoding='latin1') as _handle:
-            records = jload(_handle)['results']
+            records = jload(_handle)
+            records = records[[*records][0]]
             _handle.close
             if _type == 'peer':
                 for record in records:
-                    _dict[int(record['id'])] = {
-                        'CALLSIGN': record['callsign'],
-                        'CITY': record['city'],
-                        'STATE': record['state'],
-                        'COUNTRY': record['country'],
-                        'FREQ': record['frequency'],
-                        'CC': record['color_code'],
-                        'OFFSET': record['offset'],
-                        'LINKED': record['ts_linked'],
-                        'TRUSTEE': record['trustee'],
-                        'NETWORK': record['ipsc_network']
-                    }
+                    try:
+                        _dict[int(record['id'])] = {
+                            'CALLSIGN': record['callsign'],
+                            'CITY': record['city'],
+                            'STATE': record['state'],
+                            'COUNTRY': record['country'],
+                            'FREQ': record['frequency'],
+                            'CC': record['color_code'],
+                            'OFFSET': record['offset'],
+                            'LINKED': record['ts_linked'],
+                            'TRUSTEE': record['trustee'],
+                            'NETWORK': record['ipsc_network']
+                        }
+                    except:
+                        pass
             elif _type == 'subscriber':
                 for record in records:
-                    _dict[int(record['id'])] = {
-                        'CALLSIGN': record['callsign'],
-                        'NAME': (record['fname'] + ' ' + record['surname']),
-                        'CITY': record['city'],
-                        'STATE': record['state'],
-                        'COUNTRY': record['country']
-                    }
+                    try:
+                        _dict[int(record['id'])] = {
+                            'CALLSIGN': record['callsign'],
+                            'NAME': (record['fname'] + ' ' + record['surname']),
+                            'CITY': record['city'],
+                            'STATE': record['state'],
+                            'COUNTRY': record['country']
+                        }
+                    except:
+                        pass
             elif _type == 'tgid':
                 for record in records:
-                    _dict[int(record['tgid'])] = {
-                        'NAME': record['callsign'],
-                        'ID': record['id'] 
-                    }
+                    try:
+                        _dict[int(record['tgid'])] = {
+                            'NAME': record['callsign'],
+                            'ID': record['id'] 
+                        }
+                    except:
+                        pass
         return _dict
     except IOError:
         return _dict
@@ -186,11 +200,16 @@ if __name__ == '__main__':
     user file:      ('callsign', 'city', 'country', 'fname', 'radio_id', 'remarks', 'state', 'surname')
     '''
     
+    #PEER_URL        = 'https://www.radioid.net/api/dmr/repeater/?country=united%20states'
+    #SUBSCRIBER_URL  = 'https://www.radioid.net/api/dmr/user/?country=united%20states'
+    PEER_URL        = 'https://www.radioid.net/static/rptrs.json'
+    SUBSCRIBER_URL  = 'https://www.radioid.net/static/users.json'
+    
     # Try updating peer aliases file
-    result = try_download('/tmp/', 'peers.json', 'https://www.radioid.net/api/dmr/repeater/?country=united%20states', 0)
+    result = try_download('/tmp/', 'peers.json', PEER_URL, 0)
     print(result)
     # Try updating subscriber aliases file
-    result = try_download('/tmp/', 'subscribers.json', 'https://www.radioid.net/api/dmr/user/?country=united%20states', 0)
+    result = try_download('/tmp/', 'subscribers.json', SUBSCRIBER_URL, 0)
     print(result)
         
     # Make Dictionaries
