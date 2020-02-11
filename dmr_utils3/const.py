@@ -44,8 +44,10 @@ SYNC = {
     'BS_DATA':  BS_DATA_SYNC
 }
 
-# LC Options - Use for Group Voice
-LC_OPT = b'\x00\x00\x20'
+# LC Options - G for Group, U for unit, LC_OPT is legacy for group.
+LC_OPT_G = b'\x00\x00\x00'
+LC_OPT_U = b'\x03\x00\x00'
+LC_OPT = LC_OPT_G
 
 # Precomputed EMB values, where CC always = 1, and PI always = 0
 EMB = {
@@ -86,6 +88,29 @@ LC_VOICE = {
     'SVC-OVCM': bitarray('00100000'),
     'SVC-NONE': bitarray('00000000')
 }
+
+# Data Type as defined for use in the Slot Type Message
+DATA_TYPE = {
+    'PI_HEAD':       bitarray('0000'),
+    'VOICE_LC_HEAD': bitarray('0001'),
+    'VOICE_LC_TERM': bitarray('0010'),
+    'CSBK':          bitarray('0011'),
+    'MBC_HEAD':      bitarray('0100'),
+    'MBC_CONT':      bitarray('0101'),
+    'DATA_HEAD':     bitarray('0110'),
+    '1/2_RATE':      bitarray('0111'),
+    '3/4_RATE':      bitarray('1000'),
+    'IDLE':          bitarray('1001'),
+    '1/1_RATE':      bitarray('1010'),
+    'RES_1':         bitarray('1011'),
+    'RES_2':         bitarray('1100'),
+    'RES_3':         bitarray('1101'),
+    'RES_4':         bitarray('1110'),
+    'RES_5':         bitarray('1111')
+}
+
+
+
 
 '''
 EMB: CC(4b), PI(1b), LCSS(2b), EMB Parity(9b - QR 16,7,5)
