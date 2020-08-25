@@ -139,10 +139,20 @@ def mk_full_id_dict(_path, _file, _type):
                         pass
             elif _type == 'subscriber':
                 for record in records:
+                    # Try to craete a string name regardless of existing data
+                    if (('surname' in record.keys()) and ('fname'in record.keys())):
+                        _name = str(record['fname']) + ' ' + str(record['surname'])
+                    elif 'fname' in record.keys():
+                        _name = str(record['fname'])
+                    elif 'surname' in record.keys():
+                        _name = str(record['surname'])
+                    else:
+                        _name = 'NO NAME'
+                    # Make dictionary entry, if any of the information below isn't in the record, it wil be skipped
                     try:
                         _dict[int(record['id'])] = {
                             'CALLSIGN': record['callsign'],
-                            'NAME': (record['fname'] + ' ' + record['surname']),
+                            'NAME': _name,
                             'CITY': record['city'],
                             'STATE': record['state'],
                             'COUNTRY': record['country']
