@@ -78,15 +78,22 @@ def try_download(_path, _file, _url, _stale,):
         file_old = (getmtime(_path+_file) + _stale) < now
     if not file_exists or (file_exists and file_old):
         try:
-            with urlopen(_url, context=no_verify) as response, open(_path+_file, 'wb') as outfile:
+            with urlopen(_url, context=no_verify) as response:
                 data = response.read()
-                outfile.write(data)
+                #outfile.write(data)
                 response.close()
             result = 'ID ALIAS MAPPER: \'{}\' successfully downloaded'.format(_file)
         except IOError:
             result = 'ID ALIAS MAPPER: \'{}\' could not be downloaded due to an IOError'.format(_file)
+        try:
+            with open(_path+_file, 'wb') as outfile:
+                outfile.write(data)
+                outfile.close()
+        except IOError:
+            result = 'ID ALIAS mapper \'{}\' file could not be written due to an IOError'.format(_file)
     else:
         result = 'ID ALIAS MAPPER: \'{}\' is current, not downloaded'.format(_file)
+    
     return result
 
 # SHORT VERSION - MAKES A SIMPLE {INTEGER ID: 'CALLSIGN'} DICTIONARY
