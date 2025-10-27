@@ -1,6 +1,8 @@
 dmr_utils3
 _________
 
+NOTE: THIS REPOSITORY HAS BEEN ARCHIVED, NO FURTHER DEVELOPMENT IS EXPECTED. ANY PULL REQUESTS WILL BE IGNORED
+
 **IMPORTANT UPDATE: This module is now available through pypi and may be installed just like any other globally available python module, i.e. "pip install dmr_utils" or "easy_install dmr_utils". It is HIGHLY recommended that users (not developers or those specifically working with me to test code) use that method.**
 
 Utilities for working with Digital Moble Radio (DMR) in python. Includes routines for assembling and disasembling packets and encoding/removing FEC/ECC routines. The utilities are intended primarily for processing on the "network" side of DMR, not the air interface -- such as for building network linking tools, and as such, routines mostly remove FEC/ECC rather than apply repairs, which should be done at the air interface first.
